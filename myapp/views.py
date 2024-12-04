@@ -1,7 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.db.models import Q
 from .models import User
+from .serializers import UserProfileSerializer
 import time
 
 
@@ -45,3 +47,23 @@ class VerifyAuthCodeView(APIView):
             return Response({"message": "Authorization successful."}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Invalid authorization code."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+class UserProfileView(APIView):
+    def get(self, request):
+        phone_number = request.query_params.get('phone_number')
+        if not phone_number:
+            return Response({"error": "Phone number is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Ищем пользователя без строгой зависимости от формата номера
+            user = User.objects.get(
+                Q(phone_number=phone_number) | Q(phone_number=phone_number.lstrip('+'))
+            )
+            serializer = UserProfileSerializer(user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
