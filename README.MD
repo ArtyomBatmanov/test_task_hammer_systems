@@ -30,3 +30,5 @@ pip install -r requirements.txt
 python manage.py makemigrations
 python manage.py migrate
 ```
+
+4) В корне проекта представлен файл Referral System API.postman_collection.json с коллекциями, можете его использовать для тестирования URL
