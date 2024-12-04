@@ -21,6 +21,9 @@ class SendAuthCodeView(APIView):
         user.generate_auth_code()
         user.save()
 
+        user.generate_invite_code()
+        user.save()
+
         # Имитация отправки кода (задержка 2 секунды)
         time.sleep(2)
         print(f"Auth code sent: {user.auth_code}")  # В реальном проекте отправьте код через SMS.
@@ -44,12 +47,10 @@ class VerifyAuthCodeView(APIView):
         if user.auth_code == auth_code:
             user.auth_code = None  # Сбрасываем код после успешной авторизации
             user.save()
-            return Response({"message": "Authorization successful."}, status=status.HTTP_200_OK)
+            return Response({"message": "Successfully authorized.", "invite_code": user.invite_code})
+
         else:
             return Response({"error": "Invalid authorization code."}, status=status.HTTP_400_BAD_REQUEST)
-
-
-
 
 
 class UserProfileView(APIView):

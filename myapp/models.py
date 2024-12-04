@@ -1,5 +1,6 @@
 from django.db import models
 import random
+import string
 
 
 class User(models.Model):
@@ -10,3 +11,6 @@ class User(models.Model):
 
     def generate_auth_code(self):
         self.auth_code = str(random.randint(1000, 9999))
+
+    def generate_invite_code(self):
+        self.invite_code = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
